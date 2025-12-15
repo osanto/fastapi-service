@@ -12,7 +12,8 @@ router = APIRouter(
 )
 
 @router.get("/", response_model=List[schemas.PostOutput])
-def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
+def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user), limit: int = 10, skip: int = 0, search: Optional[str] = None
+):
     posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
     return posts
@@ -35,13 +36,13 @@ def create_post(post: schemas.Post, db: Session = Depends(get_db), current_user:
     
     return new_post
 
-@router.delete("/{id}")
-def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_post(id: int, db: Session = Depends(get_db), current_user: models.User = Depends(oauth2.get_current_user)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
 
     post = post_query.first()
 
-    if post.first() == None:
+    if post == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"post with id: {id} does not exist")
     
     if post.user_id != current_user.id:
@@ -50,7 +51,7 @@ def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depe
     post_query.delete(synchronize_session=False)
     db.commit()
     
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    return
 
 @router.put("/{id}", response_model=schemas.PostResponse)
 def update_post(id: int, updated_post: schemas.Post,  db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
