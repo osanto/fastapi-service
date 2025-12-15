@@ -29,7 +29,6 @@ def verify_access_token(token: str, credentials_exception):
             raise credentials_exception
         
         token_data = schemas.TokenData(id=str(id))
-        print(token_data)
         
     except jwt.DecodeError:
         raise credentials_exception
