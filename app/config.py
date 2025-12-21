@@ -1,13 +1,19 @@
 import os
 from pydantic_settings import BaseSettings
+from typing import Optional
 
 
 class Settings(BaseSettings):
-    database_username: str
-    database_password: str
-    database_hostname: str
-    database_port: str
-    database_name: str
+    # Render / production
+    database_url: Optional[str] = None
+
+    # Local / docker (optional)
+    database_username: Optional[str] = None
+    database_password: Optional[str] = None
+    database_hostname: Optional[str] = None
+    database_port: Optional[str] = None
+    database_name: Optional[str] = None
+
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int
