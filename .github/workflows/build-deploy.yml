@@ -72,4 +72,12 @@ jobs:
     steps:
       - name: Trigger Render deploy
         run: |
-          curl -X POST "$${{ secrets.RENDER_DEPLOY_HOOK }}"
+          echo "Starting deployment..."
+          RESPONSE=$(curl -X POST "$RENDER_DEPLOY_HOOK" -w "%{http_code}" -s -o /dev/null)
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "✅ Deployment succeeded!"
+            echo "App available at: https://fast-api-example-w11a.onrender.com/docs"
+          else
+            echo "❌ Deployment failed! Response code: $RESPONSE"
+            exit 1
+          fi
