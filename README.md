@@ -208,6 +208,27 @@ This is a social media-style API where users can create posts, and other users c
 
 ### API Endpoints Reference
 
+#### ❤️ Health Check
+
+##### Check Application Health
+
+```http
+GET /
+```
+
+**Response:**
+
+```json
+{
+  "status": "healthy",
+  "message": "FastAPI is running"
+}
+```
+
+Used by deployment platforms (like Render) to verify the application is running correctly.
+
+---
+
 #### 🔐 Authentication & Users
 
 ##### Register a New User
