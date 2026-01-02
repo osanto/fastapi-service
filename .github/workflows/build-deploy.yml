@@ -83,8 +83,49 @@ jobs:
           if [ "$RESPONSE" -eq 200 ] || [ "$RESPONSE" -eq 201 ] || [ "$RESPONSE" -eq 202 ]; then
             echo "✅ Deployment triggered successfully! (HTTP $RESPONSE)"
             echo "🚀 Render is building and deploying your application..."
-            echo "📱 App will be available at: https://fast-api-example-w11a.onrender.com/docs"
           else
-            echo "❌ Deployment failed! Response code: $RESPONSE"
+            echo "❌ Deployment failed to trigger! Response code: $RESPONSE"
             exit 1
           fi
+
+      - name: Wait for deployment to complete
+        run: |
+          echo "⏳ Waiting for Render to deploy the application..."
+          echo "This may take 2-5 minutes..."
+
+          MAX_ATTEMPTS=60
+          ATTEMPT=0
+          SLEEP_TIME=10
+          APP_URL="https://fast-api-example-w11a.onrender.com"
+
+          # Wait a bit for Render to start building
+          echo "Waiting 30 seconds for build to start..."
+          sleep 30
+
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            ATTEMPT=$((ATTEMPT + 1))
+            echo "Attempt $ATTEMPT/$MAX_ATTEMPTS: Checking if app is healthy..."
+            
+            # Check the health endpoint
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL/" || echo "000")
+            
+            if [ "$HTTP_CODE" -eq 200 ]; then
+              echo "✅ Deployment successful! App is healthy and responding."
+              echo "📱 App is live at: $APP_URL/docs"
+              
+              # Verify the health check response
+              HEALTH_CHECK=$(curl -s "$APP_URL/" || echo "error")
+              echo "Health check response: $HEALTH_CHECK"
+              exit 0
+            elif [ "$HTTP_CODE" -eq 503 ] || [ "$HTTP_CODE" -eq 502 ]; then
+              echo "⏳ App is still deploying (HTTP $HTTP_CODE)... waiting ${SLEEP_TIME}s"
+            else
+              echo "⚠️  Unexpected response (HTTP $HTTP_CODE)... waiting ${SLEEP_TIME}s"
+            fi
+            
+            sleep $SLEEP_TIME
+          done
+
+          echo "❌ Deployment timeout! App did not become healthy within $((MAX_ATTEMPTS * SLEEP_TIME)) seconds."
+          echo "Please check Render dashboard for deployment logs."
+          exit 1
