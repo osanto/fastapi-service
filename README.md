@@ -1,5 +1,4 @@
-# FastAPI Example Project
-
+# FastAPI Service
 
 [![Tests](https://github.com/osanto/fast-api-example/actions/workflows/build-deploy.yml/badge.svg)](https://github.com/osanto/fast-api-example/actions/workflows/build-deploy.yml)
 [![Deployment](https://img.shields.io/badge/deployed-Render-46E3B7.svg?logo=render)](https://fast-api-example-w11a.onrender.com/docs)
@@ -8,7 +7,11 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.123.5-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-316192.svg?logo=postgresql)](https://www.postgresql.org/)
 
-This is an example/template project demonstrating FastAPI best practices for building RESTful APIs with Python, featuring database integration, migrations, containerization, and comprehensive testing.
+Minimal backend service with validated endpoints and automated tests,used to demonstrate API-level testing and backend understanding.
+
+## Why this project
+
+This service exists to practice API design and testing at the boundary between client and backend, focusing on correctness and contract validation.
 
 ## 📑 Table of Contents
 
